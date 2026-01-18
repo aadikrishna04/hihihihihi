@@ -1,15 +1,19 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Manrope } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const manrope = Manrope({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "600", "700", "800"],
+  variable: "--font-manrope"
+});
 
 export const metadata: Metadata = {
-  title: 'NexusAR - Experience Reality Reimagined',
-  description: 'Step into a new dimension where the digital and physical worlds merge seamlessly. Our cutting-edge AR technology transforms how you see, interact, and experience everything around you.',
+  title: 'SocialSense AR',
+  description: 'SocialSense AR: Turning the Tide on Darkness',
+  keywords: 'Blind Navigation, Spatial Navigation, Comp-Vis Memory Collection, YOLO, OpenCV, Audio Cues',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -37,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`${manrope.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SocialSense AR: Research">
+  <meta name="keywords" content="Blind Navigation, Spatial Navigation, Comp-Vis Memory Collection, YOLO, OpenCV, Audio Cues">
+  <title>Research - SocialSense AR</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap');
+    
+    /* AR Dark Theme */
+    :root {
+      --ar-bg-dark: #000000;
+      --ar-bg-darker: #000000;
+      --ar-surface: rgba(10, 10, 10, 0.8);
+      --ar-surface-light: rgba(15, 15, 15, 0.9);
+      --ar-border: rgba(204, 0, 0, 0.3);
+      --ar-red: #cc0000;
+      --ar-red-glow: rgba(204, 0, 0, 0.5);
+      --text-primary: #e8e8f0;
+      --text-secondary: #b0b0c0;
+      --glass-bg: rgba(0, 0, 0, 0.3);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--ar-bg-dark);
+      color: var(--text-primary);
+      font-family: 'Manrope', sans-serif;
+      font-weight: 400;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    /* Animated particle background */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+    
+    /* Subtle grid overlay - starts below navbar */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(204, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(204, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .container, header, footer, section {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      background: var(--ar-bg-darker);
+      border: none;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .hero img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    
+    .author-banner {
+      background: var(--ar-bg-darker);
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-bottom: 3px solid var(--ar-red);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .hero a {
+      color: var(--ar-red);
+      text-decoration: none;
+      border-bottom: 1px solid var(--ar-red);
+      font-weight: 600;
+    }
+    
+    .hero a:hover {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      color: var(--ar-red);
+      letter-spacing: 1px;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--ar-red), transparent);
+      box-shadow: 0 0 10px var(--ar-red-glow);
+    }
+    
+    .research-card {
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .research-card:hover {
+      border-color: var(--ar-red);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+                  0 0 30px var(--ar-red-glow),
+                  0 0 0 1px rgba(204, 0, 0, 0.3) inset;
+      transform: translateY(-4px);
+    }
+    
+    .research-card-title {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      color: var(--ar-red);
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--glass-border);
+    }
+    
+    .research-card-content {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+    
+    .citation-link {
+      text-decoration: underline;
+      text-decoration-color: var(--ar-red);
+      text-underline-offset: 3px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .citation-link:hover {
+      color: var(--ar-red);
+    }
+    
+    .citation-link::after {
+      content: attr(data-source);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-bottom: 5px;
+      z-index: 1000;
+      max-width: 400px;
+      word-wrap: break-word;
+      white-space: normal;
+      width: max-content;
+      max-width: 300px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+    }
+    
+    .citation-link::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--glass-bg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-bottom: -5px;
+      z-index: 1000;
+    }
+    
+    .citation-link:hover::after,
+    .citation-link:hover::before {
+      opacity: 1;
+    }
+    
+    p.lead {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    main {
+      background: transparent;
+      border-left: 1px solid var(--glass-border);
+      border-right: 1px solid var(--glass-border);
+      padding: 2rem;
+      position: relative;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    section:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+                  0 0 0 1px rgba(204, 0, 0, 0.2) inset;
+    }
+    
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--ar-red), transparent);
+      opacity: 0.8;
+      border-radius: 16px 0 0 16px;
+    }
+    
+    footer {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-top: 2px solid var(--ar-red);
+      color: var(--text-secondary);
+      position: relative;
+    }
+    
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--ar-red);
+    }
+    
+    /* Navbar styling */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border-bottom: 2px solid var(--ar-red);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 0;
+    }
+    
+    .navbar-nav {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .nav-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .nav-link {
+      color: var(--text-primary);
+      padding: 1rem 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+      text-shadow: 0 0 10px var(--ar-red-glow);
+    }
+    
+    .nav-link.active {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+      text-shadow: 0 0 10px var(--ar-red-glow);
+    }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <img src="banner.png" alt="SocialSense AR">
+  </header>
+
+  <nav class="navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Demo</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="research.html">Research</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="container my-5">
+    <section>
+      <h2 class="section-title h3">Research</h2>
+      <p class="lead">Below are the research foundations for each of our use cases.</p>
+      <br>
+      
+      <div class="research-card">
+        <div class="research-card-title">Changing the colors of surrounding objects</div>
+        <div class="research-card-content">
+          Many neurodivergent individuals, particularly autistic people, experience visual hypersensitivity to specific colors, brightness, and contrast, which can trigger <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" target="_blank">discomfort or sensory overload</a>.
+          Autistic sensory processing differences often involve difficulty filtering aversive visual input, meaning certain colors can disproportionately interfere with <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" target="_blank">attention and emotional regulation</a>.
+          Research on sensory-friendly and neurodiversity-informed environments shows that reducing or modifying visually salient features improves <a href="https://journals.sagepub.com/doi/10.1177/19375867211035152" class="citation-link" data-source="https://journals.sagepub.com/doi/10.1177/19375867211035152" target="_blank">comfort, participation, and engagement</a>.
+          Allowing users to replace triggering colors with less aversive alternatives aligns with evidence that simplified visual input supports <a href="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" class="citation-link" data-source="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" target="_blank">well-being and sustained interaction</a>.
+        </div>
+      </div>
+
+      <div class="research-card">
+        <div class="research-card-title">Hiding distracting objects (object masking / blacking out)</div>
+        <div class="research-card-content">
+          Neurodivergent individuals, especially autistic people and people with ADHD, often experience difficulty filtering irrelevant visual stimuli, making background objects like TVs or bright lights <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" target="_blank">highly distracting</a>.
+          Research on sensory processing in autism shows that visual clutter and high-salience stimuli increase cognitive load and can lead to <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" target="_blank">sensory overload or task disengagement</a>.
+          Studies on attention and perceptual load demonstrate that reducing irrelevant visual input improves <a href="https://www.sciencedirect.com/science/article/pii/S0891422218302562" class="citation-link" data-source="https://www.sciencedirect.com/science/article/pii/S0891422218302562" target="_blank">focus and task performance</a> by freeing cognitive resources.
+          Masking or blacking out distracting objects aligns with sensory-friendly design principles that emphasize minimizing non-essential visual information to support <a href="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" class="citation-link" data-source="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" target="_blank">regulation and sustained engagement</a>.
+        </div>
+      </div>
+
+      <div class="research-card">
+        <div class="research-card-title">Focus mode (background blur + audio suppression)</div>
+        <div class="research-card-content">
+          Neurodivergent individuals often experience heightened sensitivity to visual motion, making moving people or objects in the background especially <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" target="_blank">distracting and cognitively demanding</a>.
+          Research in autism shows atypical sensory modulation and reduced ability to suppress irrelevant visual and auditory input, which increases <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" target="_blank">distraction and mental fatigue</a> in dynamic environments.
+          Studies on attention and perceptual load demonstrate that blurring or reducing background visual detail improves <a href="https://www.sciencedirect.com/science/article/pii/S0891422218302562" class="citation-link" data-source="https://www.sciencedirect.com/science/article/pii/S0891422218302562" target="_blank">focus by limiting the salience</a> of irrelevant motion cues.
+          Auditory hypersensitivity is common in neurodivergent populations, and research shows that reducing or suppressing background noise can lower stress and improve <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6863142/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC6863142/" target="_blank">task engagement and concentration</a>.
+        </div>
+      </div>
+
+      <div class="research-card">
+        <div class="research-card-title">Reducing social visual load</div>
+        <div class="research-card-content">
+          Many neurodivergent individuals experience heightened anxiety and sensory overload when being visually observed by others, such as during presentations or group settings where <a href="https://pubmed.ncbi.nlm.nih.gov/20685998/" class="citation-link" data-source="https://pubmed.ncbi.nlm.nih.gov/20685998/" target="_blank">multiple people are staring</a>.
+          Research shows that autistic individuals often perceive neutral or ambiguous facial expressions as threatening, which can amplify stress <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01029/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01029/full" target="_blank">when many faces are visible at once</a>.
+          Studies on social attention in autism indicate that faces are processed as highly salient stimuli and can consume disproportionate cognitive resources, interfering with <a href="https://pubmed.ncbi.nlm.nih.gov/18729600/" class="citation-link" data-source="https://pubmed.ncbi.nlm.nih.gov/18729600/" target="_blank">task performance and verbal output</a>.
+          Reducing or hiding the visual presence of people aligns with evidence that lowering social-sensory load helps neurodivergent individuals <a href="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" class="citation-link" data-source="https://www.tandfonline.com/doi/full/10.1080/09687599.2020.1827518" target="_blank">regulate anxiety and maintain focus</a> during demanding social tasks.
+        </div>
+      </div>
+
+      <div class="research-card">
+        <div class="research-card-title">Conversation mode (visual isolation, audio focus, sentiment support, conversation summary)</div>
+        <div class="research-card-content">
+          Neurodivergent individuals often struggle to filter competing visual and auditory stimuli in social environments, making it difficult to maintain focus during one-on-one conversations <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC3086654/" target="_blank">when others are present</a>.
+          Reducing visual salience by isolating the conversation partner and desaturating or black-and-whiting others aligns with research showing that minimizing background visual input improves <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2021.633037/full" target="_blank">social attention and engagement in autism</a>.
+          Auditory hypersensitivity and difficulty segregating speech streams are common in neurodivergent populations, and suppressing non-target audio has been shown to reduce stress and improve <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6863142/" class="citation-link" data-source="https://pmc.ncbi.nlm.nih.gov/articles/PMC6863142/" target="_blank">conversational comprehension</a>.
+          Many autistic individuals have difficulty interpreting emotional cues such as anger, sarcasm, or neutrality, particularly in real-time conversation, which can lead to <a href="https://pubmed.ncbi.nlm.nih.gov/18729600/" class="citation-link" data-source="https://pubmed.ncbi.nlm.nih.gov/18729600/" target="_blank">miscommunication and anxiety</a>.
+          Providing explicit sentiment cues supports social understanding by reducing ambiguity and perceived threat in conversational partners' <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01029/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2014.01029/full" target="_blank">expressions or tone</a>.
+          Working memory and executive function challenges can make it hard to track conversational context, and external supports like brief summaries improve <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00246/full" class="citation-link" data-source="https://www.frontiersin.org/articles/10.3389/fpsyg.2018.00246/full" target="_blank">coherence, response quality, and sustained focus</a>.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-4">
+    <p class="mb-0">© 2025 SocialSense AR Project</p>
+  </footer>
+
+  <!-- Bootstrap JavaScript and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <!-- Animated Particle Background -->
+  <canvas id="particles-canvas"></canvas>
+  <script>
+    (function() {
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const particleCount = 50;
+      
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      class Particle {
+        constructor() {
+          this.reset();
+          this.y = Math.random() * canvas.height;
+        }
+        
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.5;
+          this.speedY = (Math.random() - 0.5) * 0.5;
+          this.opacity = Math.random() * 0.5 + 0.2;
+        }
+        
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          
+          if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        }
+        
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(204, 0, 0, ${this.opacity})`;
+          ctx.fill();
+        }
+      }
+      
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle());
+        }
+      }
+      
+      function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 150) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(204, 0, 0, ${0.1 * (1 - distance / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.update();
+          particle.draw();
+        });
+        
+        connectParticles();
+        requestAnimationFrame(animate);
+      }
+      
+      initParticles();
+      animate();
+    })();
+  </script>
+</body>
+</html>

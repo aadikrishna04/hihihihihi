@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SocialSense AR: Turning the Tide on Darkness">
+  <meta name="keywords" content="Blind Navigation, Spatial Navigation, Comp-Vis Memory Collection, YOLO, OpenCV, Audio Cues">
+  <title>SocialSense AR</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+ <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap');
+    
+    /* AR Dark Theme */
+    :root {
+      --ar-bg-dark: #000000;
+      --ar-bg-darker: #000000;
+      --ar-surface: rgba(10, 10, 10, 0.8);
+      --ar-surface-light: rgba(15, 15, 15, 0.9);
+      --ar-border: rgba(204, 0, 0, 0.3);
+      --ar-red: #cc0000;
+      --ar-red-glow: rgba(204, 0, 0, 0.5);
+      --text-primary: #e8e8f0;
+      --text-secondary: #b0b0c0;
+      --glass-bg: rgba(0, 0, 0, 0.3);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--ar-bg-dark);
+      color: var(--text-primary);
+      font-family: 'Manrope', sans-serif;
+      font-weight: 400;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    /* Animated particle background */
+    #particles-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+    
+    /* Subtle grid overlay - starts below navbar */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(204, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(204, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .container, header, footer, section {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 0;
+      margin: 0;
+      background: var(--ar-bg-darker);
+      border: none;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .hero img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    
+    .author-banner {
+      background: var(--ar-bg-darker);
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-bottom: 3px solid var(--ar-red);
+      position: relative;
+      z-index: 10;
+    }
+    
+    
+    .hero h1 {
+      font-family: 'Manrope', sans-serif;
+      font-weight: 800;
+      color: var(--ar-red);
+      letter-spacing: 2px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero p.lead {
+      color: var(--text-primary);
+      font-weight: 600;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .hero a {
+      color: var(--ar-red);
+      text-decoration: none;
+      border-bottom: 1px solid var(--ar-red);
+      font-weight: 600;
+    }
+    
+    .hero a:hover {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+    }
+    
+    .section-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      color: var(--ar-red);
+      letter-spacing: 1px;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--ar-red), transparent);
+      box-shadow: 0 0 10px var(--ar-red-glow);
+    }
+    
+    .video-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+                  0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+    
+    .video-card:hover {
+      border-color: var(--ar-red);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+                  0 0 30px var(--ar-red-glow),
+                  0 0 0 1px rgba(204, 0, 0, 0.3) inset;
+      transform: translateY(-4px);
+    }
+    
+    .video-card-title {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 1rem;
+      margin: 0;
+      border-bottom: 1px solid var(--glass-border);
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      color: var(--ar-red);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    
+    .video-card-iframe-container {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .video-card iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+    
+    .video-card-description {
+      padding: 1rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      flex-grow: 1;
+      min-height: 60px;
+    }
+    
+    .citation-link {
+      text-decoration: underline;
+      text-decoration-color: var(--ar-red);
+      text-underline-offset: 3px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .citation-link:hover {
+      color: var(--ar-red);
+    }
+    
+    .citation-link::after {
+      content: attr(data-source);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-bottom: 5px;
+      z-index: 1000;
+      max-width: 400px;
+      word-wrap: break-word;
+      white-space: normal;
+      width: max-content;
+      max-width: 300px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+    }
+    
+    .citation-link::before {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--glass-bg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-bottom: -5px;
+      z-index: 1000;
+    }
+    
+    .citation-link:hover::after,
+    .citation-link:hover::before {
+      opacity: 1;
+    }
+    
+    p.lead {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    main {
+      background: transparent;
+      border-left: 1px solid var(--glass-border);
+      border-right: 1px solid var(--glass-border);
+      padding: 2rem;
+      position: relative;
+    }
+    
+    section {
+      margin-bottom: 3rem;
+      padding: 1.5rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                  0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    section:hover {
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+                  0 0 0 1px rgba(204, 0, 0, 0.2) inset;
+    }
+    
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--ar-red), transparent);
+      opacity: 0.8;
+      border-radius: 16px 0 0 16px;
+    }
+    
+    footer {
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-top: 2px solid var(--ar-red);
+      color: var(--text-secondary);
+      position: relative;
+    }
+    
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--ar-red);
+    }
+    
+    img {
+      filter: contrast(1.05) brightness(1.1);
+    }
+    
+    img:hover {
+      filter: contrast(1.1) brightness(1.2);
+    }
+    
+    /* Tech stack images styling */
+    .tech-image {
+      margin: 15px;
+      padding: 15px;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .tech-image:hover {
+      transform: scale(1.4);
+      border-color: var(--ar-red);
+      box-shadow: 0 8px 24px rgba(204, 0, 0, 0.4);
+      z-index: 10;
+    }
+    
+    /* Navbar styling */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: var(--glass-bg);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border-bottom: 2px solid var(--ar-red);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      padding: 0;
+    }
+    
+    .navbar-nav {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .nav-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .nav-link {
+      color: var(--text-primary);
+      padding: 1rem 2rem;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link:hover {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+      text-shadow: 0 0 10px var(--ar-red-glow);
+    }
+    
+    .nav-link.active {
+      color: var(--ar-red);
+      border-bottom-color: var(--ar-red);
+      text-shadow: 0 0 10px var(--ar-red-glow);
+    }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <img src="banner.png" alt="SocialSense AR">
+  </header>
+
+  <nav class="navbar">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link active" href="index.html">Demo</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/research.html">Research</a>
+      </li>
+    </ul>
+  </nav>
+
+  <main class="container my-5">
+    <section class="text-center mb-5">
+      <img src="oceanustest.gif" alt="Visualize Gif" style="max-height: 600px;"> 
+      <br>
+      <br>
+      <p class="lead">
+        SocialSense AR helps people with learning disabilities stay regulated, focused, and confident in real-world environments by giving them direct control over overwhelming sensory and social input. Through adaptive visual and audio filtering, it transforms chaotic spaces into manageable ones, allowing users to participate more comfortably in conversations, presentations, and daily activities without needing to withdraw or mask.</p>
+    </section>
+
+    <section>
+  <h2 class="section-title h3">Tech Stack</h2>
+  <br>
+  <div class="row justify-content-center">
+    <img src="techstack.png" alt="Tech Stack" style="max-height: 600px;"><br>
+    
+  </div>
+  <br>
+    <br>
+    <p class="lead">Through YOLO and OpenCV (Hugging Face Visual Transformer) we identify the closest object of that type, and enclose it with a bounding box. 
+      Then, we utilize two zero-shot learning models (depth anything and SAM) and a novel mathematical path-finding algorithm we developed to provide audio cues to the user moving through legal motion (paths without obstacles in the way aligned toward the target object/location using surround sound spatial audio). With this interface running on the Meta x Ray Bans glasses, we also have developed a memory collection software that captures the last relevant locations that key items were placed by an individual (we use a multi-modal model to help individuals navigate back to where they left these items).</p>
+      
+  
+    </section>
+<br>
+<section>
+    <h2 class="section-title h3">Use Cases</h2>
+    <p class="lead">
+      We've performed extensive tests on the accuracy of our model (from a computer vision and trajectory planning perspective) in order to determine its robustness. Below, we display 5 general cases of indoor-assisted navigation.
+    </p>
+    <br>
+  
+    <!-- First row: 3 cards -->
+    <div class="row mb-4">
+      <div class="col-md-4 mb-4">
+        <div class="video-card">
+          <div class="video-card-title">Mitigating Color-Driven Sensory Overload</div>
+          <div class="video-card-iframe-container">
+            <iframe src="https://www.youtube.com/embed/rkZq8w7ApEU?si=WalwhdpA9biPQP2m" allowfullscreen></iframe>
+          </div>
+          <div class="video-card-description">
+            <!-- Description moved to Research page -->
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-4 mb-4">
+        <div class="video-card">
+          <div class="video-card-title">Hiding distracting objects (object masking / blacking out)</div>
+          <div class="video-card-iframe-container">
+            <iframe src="https://www.youtube.com/embed/Fo0ibA6xB1o?si=Y64NDdJS28JrPB_O" allowfullscreen></iframe>
+          </div>
+          <div class="video-card-description">
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-4 mb-4">
+        <div class="video-card">
+          <div class="video-card-title">Focus mode (background blur + audio suppression)</div>
+          <div class="video-card-iframe-container">
+            <iframe src="https://www.youtube.com/embed/fLn-sadAN4Q?si=fv9FOQjDDF0KuOXq" allowfullscreen></iframe>
+          </div>
+          <div class="video-card-description">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Second row: 2 cards (same width, centered) -->
+    <div class="row mb-4 justify-content-center">
+      <div class="col-md-4 mb-4">
+        <div class="video-card">
+          <div class="video-card-title">Reducing social visual load</div>
+          <div class="video-card-iframe-container">
+            <iframe src="https://www.youtube.com/embed/LXzgGdAiqE0?si=pKqlvJUrgI51dc6h" allowfullscreen></iframe>
+          </div>
+          <div class="video-card-description">
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-4 mb-4">
+        <div class="video-card">
+          <div class="video-card-title">
+            Conversation mode (visual isolation, audio focus, sentiment support, conversation summary)
+          </div>
+          <div class="video-card-iframe-container">
+            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+          </div>
+          <div class="video-card-description">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>  
+    <section>
+      <h2 class="section-title h3">Acknowledgments</h2>
+      <p class="text-center">
+        Special thanks to all contributors and collaborators who helped make SocialSense AR possible.
+      </p>
+      <p class="text-center">…to TartanHacks for allowing us to breathe life into this</p>
+    </section>
+  </main>
+
+  <footer class="text-center py-4">
+    <p class="mb-0">© 2025 SocialSense AR Project</p>
+  </footer>
+
+  <!-- Bootstrap JavaScript and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <!-- Animated Particle Background -->
+  <canvas id="particles-canvas"></canvas>
+  <script>
+    (function() {
+      const canvas = document.getElementById('particles-canvas');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const particleCount = 50;
+      
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      class Particle {
+        constructor() {
+          this.reset();
+          this.y = Math.random() * canvas.height;
+        }
+        
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.5;
+          this.speedY = (Math.random() - 0.5) * 0.5;
+          this.opacity = Math.random() * 0.5 + 0.2;
+        }
+        
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          
+          if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+          if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        }
+        
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(204, 0, 0, ${this.opacity})`;
+          ctx.fill();
+        }
+      }
+      
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push(new Particle());
+        }
+      }
+      
+      function connectParticles() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 150) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(204, 0, 0, ${0.1 * (1 - distance / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+      
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(particle => {
+          particle.update();
+          particle.draw();
+        });
+        
+        connectParticles();
+        requestAnimationFrame(animate);
+      }
+      
+      initParticles();
+      animate();
+    })();
+  </script>
+</body>
+</html>

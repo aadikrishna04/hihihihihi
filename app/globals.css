@@ -31,7 +31,9 @@
   --radius: 1rem;
   --glass: rgba(20, 20, 20, 0.5);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glow-red: rgba(220, 38, 38, 0.4);
+  --glow-red: rgba(204, 0, 0, 0.5);
+  --ar-red: #cc0000;
+  --ar-red-glow: rgba(204, 0, 0, 0.5);
   --sidebar: var(--background);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -80,7 +82,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
+  --font-sans: var(--font-manrope), 'Manrope', sans-serif;
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -122,6 +124,8 @@
   --color-glass: var(--glass);
   --color-glass-border: var(--glass-border);
   --color-glow-red: var(--glow-red);
+  --color-ar-red: var(--ar-red);
+  --color-ar-red-glow: var(--ar-red-glow);
 }
 
 @keyframes float {

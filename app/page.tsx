@@ -141,7 +141,7 @@ export default function Home() {
                 />
                 <VideoCard
                   title="Conversation mode (visual isolation, audio focus, sentiment support, conversation summary)"
-                  videoId="dQw4w9WgXcQ"
+                  videoId="hVykEwN5anM"
                 />
               </div>
             </GlassCard>

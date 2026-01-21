@@ -22,7 +22,7 @@ export default function ResearchPage() {
           <section>
             <GlassCard className="p-8">
               <SectionTitle>Research</SectionTitle>
-              <p className="text-lg text-neutral-400 leading-relaxed mb-8 max-w-4xl mx-auto">
+              <p className="text-lg text-neutral-400 leading-relaxed mb-8 max-w-4xl mx-auto text-center">
                 Below are the research foundations for each of our use cases.
               </p>
 

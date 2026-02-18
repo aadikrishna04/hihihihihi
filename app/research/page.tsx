@@ -73,7 +73,7 @@ export default function ResearchPage() {
       {/* Footer */}
       <footer className="border-t-2 border-dashed border-white/[0.08] py-12 mt-24">
         <div className="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-base">
-          © 2025 XRBridge
+          © 2026 XRBridge
         </div>
       </footer>
     </main>

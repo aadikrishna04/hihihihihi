@@ -42,8 +42,8 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-6 py-24">
         <div className="mb-16 text-center">
           <h2 className="text-5xl font-bold mb-4">Platform for Perception-Driven Experiences</h2>
-          <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
-            Connect computer vision models to Quest passthrough. No custom infrastructure required.
+          <p className="text-xl text-zinc-400 max-w-4xl mx-auto">
+            Connect computer vision models to Quest passthrough—no custom infrastructure required.
           </p>
         </div>
 
@@ -256,7 +256,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t-2 border-dashed border-white/[0.08] py-12">
         <div className="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-base">
-          © 2025 XRBridge
+          © 2026 XRBridge
         </div>
       </footer>
     </main>

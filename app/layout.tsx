@@ -14,23 +14,6 @@ export const metadata: Metadata = {
   title: 'XRBridge - Deploy CV Models to Meta Quest',
   description: 'Platform for deploying computer vision to Meta Quest as real-time, world-locked overlays. Voice-controlled, model-agnostic, deployed as infrastructure.',
   keywords: 'AR, XR, Meta Quest 3, Computer Vision, SAM3, Segmentation, Voice Control, Developer Platform, Spatial Computing',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
 }
 
 export default function RootLayout({

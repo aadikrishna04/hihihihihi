@@ -36,38 +36,38 @@ export function AnimatedVRBackground() {
       {/* Pure black background */}
       <div className="absolute inset-0 bg-black" />
 
-      {/* Animated red glow orbs - background accents */}
+      {/* Animated orange glow orbs - background accents */}
       <div
         className="orb absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px]"
-        style={{ 
+        style={{
           animation: "orb-float 8s ease-in-out infinite",
-          backgroundColor: "rgba(204, 0, 0, 0.2)"
+          backgroundColor: "rgba(255, 107, 0, 0.15)"
         }}
       />
       <div
         className="orb absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full blur-[100px]"
-        style={{ 
+        style={{
           animation: "orb-float 10s ease-in-out infinite 2s",
-          backgroundColor: "rgba(204, 0, 0, 0.25)"
+          backgroundColor: "rgba(255, 107, 0, 0.18)"
         }}
       />
       <div
         className="orb absolute top-1/2 right-1/3 w-[300px] h-[300px] rounded-full blur-[80px]"
-        style={{ 
+        style={{
           animation: "orb-float 12s ease-in-out infinite 4s",
-          backgroundColor: "rgba(204, 0, 0, 0.15)"
+          backgroundColor: "rgba(255, 107, 0, 0.12)"
         }}
       />
 
-      {/* VR Headset with red glow */}
+      {/* VR Headset with orange glow */}
       <div className="vr-headset absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 ease-out">
-        {/* Red glow effect behind headset */}
+        {/* Orange glow effect behind headset */}
         <div
           className="absolute -inset-20 rounded-full"
-          style={{ 
-            animation: "glow-pulse 4s ease-in-out infinite", 
+          style={{
+            animation: "glow-pulse 4s ease-in-out infinite",
             filter: "blur(80px)",
-            backgroundColor: "rgba(204, 0, 0, 0.3)"
+            backgroundColor: "rgba(255, 107, 0, 0.25)"
           }}
         />
 
@@ -84,13 +84,13 @@ export function AnimatedVRBackground() {
         </div>
       </div>
 
-      {/* Small floating orbs with red tones */}
+      {/* Small floating orbs with orange tones */}
       <div
         className="orb absolute top-1/3 left-[20%] w-4 h-4 rounded-full shadow-lg"
-        style={{ 
+        style={{
           animation: "orb-float 5s ease-in-out infinite",
-          backgroundColor: "rgba(204, 0, 0, 0.6)",
-          boxShadow: "0 0 20px rgba(204, 0, 0, 0.3)"
+          backgroundColor: "rgba(255, 107, 0, 0.5)",
+          boxShadow: "0 0 20px rgba(255, 107, 0, 0.3)"
         }}
       />
       <div
@@ -99,10 +99,10 @@ export function AnimatedVRBackground() {
       />
       <div
         className="orb absolute bottom-1/4 left-1/3 w-5 h-5 rounded-full shadow-lg"
-        style={{ 
+        style={{
           animation: "orb-float 6s ease-in-out infinite 2s",
-          backgroundColor: "rgba(204, 0, 0, 0.5)",
-          boxShadow: "0 0 20px rgba(204, 0, 0, 0.3)"
+          backgroundColor: "rgba(255, 107, 0, 0.4)",
+          boxShadow: "0 0 20px rgba(255, 107, 0, 0.25)"
         }}
       />
       <div

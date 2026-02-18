@@ -13,11 +13,11 @@ const teamMembers = [
 export function HeroSection() {
   return (
     <header className="relative text-center py-0 my-0 bg-transparent border-none">
-      <Image 
-        src="/banner.png" 
-        alt="SocialSense AR" 
+      <Image
+        src="/banner.svg"
+        alt="XRBridge"
         width={1200}
-        height={300}
+        height={200}
         className="block w-auto max-w-full h-auto mx-auto"
         style={{ background: 'transparent' }}
         unoptimized

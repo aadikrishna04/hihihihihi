@@ -16,7 +16,7 @@ export function GlassCard({ children, className, hover = true }: GlassCardProps)
         "backdrop-blur-xl",
         "border border-white/[0.06]",
         "shadow-2xl shadow-black/40",
-        hover && "transition-all duration-300 hover:border-white/[0.12] hover:shadow-black/50 hover:scale-[1.02]",
+        hover && "transition-all duration-300 hover:border-[#ff6b00]/[0.15] hover:shadow-black/50 hover:scale-[1.01]",
         className
       )}
     >

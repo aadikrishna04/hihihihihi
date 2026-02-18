@@ -34,8 +34,8 @@ export function Navigation() {
               className={cn(
                 "px-5 py-2 text-sm font-medium transition-all duration-300 rounded-full",
                 isActive
-                  ? "text-white bg-[#cc0000]/20 border border-[#cc0000]/50 shadow-[0_0_15px_rgba(204,0,0,0.3)]"
-                  : "text-neutral-400 hover:text-white hover:bg-white/[0.05]"
+                  ? "text-white bg-[#ff6b00]/20 border border-[#ff6b00]/50 shadow-[0_0_15px_rgba(255,107,0,0.3)]"
+                  : "text-neutral-400 hover:text-white hover:bg-white/[0.05] hover:border-b hover:border-[#ff6b00]/50"
               )}
             >
               {link.label}

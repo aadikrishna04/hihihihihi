@@ -11,10 +11,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'SocialSense AR',
-  description: 'SocialSense AR: Turning the Tide on Darkness',
-  keywords: 'Blind Navigation, Spatial Navigation, Comp-Vis Memory Collection, YOLO, OpenCV, Audio Cues',
-  generator: 'v0.app',
+  title: 'XRBridge - Deploy CV Models to Meta Quest',
+  description: 'Platform for deploying computer vision to Meta Quest as real-time, world-locked overlays. Voice-controlled, model-agnostic, deployed as infrastructure.',
+  keywords: 'AR, XR, Meta Quest 3, Computer Vision, SAM3, Segmentation, Voice Control, Developer Platform, Spatial Computing',
   icons: {
     icon: [
       {

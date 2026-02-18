@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import { ScrollIndicator } from "@/components/scroll-indicator";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <ScrollIndicator />
       </section>
 
       {/* What It Does */}
